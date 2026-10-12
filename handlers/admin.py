@@ -8,7 +8,7 @@ import config
 import db
 import services
 from i18n import t
-from utils import (B, kb, reply, stk, fmt, esc, ulink, uname, norm_phone, parse_amount,
+from utils import (B, kb, reply, stk, fmt, esc, ulink, uname, norm_phone, parse_contact, parse_amount,
                    paginate, pager)
 from keyboards import admin_kb, cancel_kb
 from handlers.common import show_home
@@ -344,9 +344,9 @@ async def order_text(m: Message, state: FSMContext):
 @router.message(AOrder.phone, F.text)
 async def order_phone(m: Message, state: FSMContext):
     lang = await L(m.from_user.id)
-    phone = norm_phone(m.text)
+    phone = parse_contact(m.text)
     if not phone:
-        return await m.answer(t("bad_phone", lang))
+        return await m.answer(t("bad_contact", lang))
     await state.update_data(phone=phone)
     await state.set_state(AOrder.price)
     rows = [[B(t("som", lang, n=fmt(p)), f"pr:{p}")] for p in config.ADMIN_PRICES]

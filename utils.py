@@ -40,6 +40,16 @@ def norm_phone(s):
     return None
 
 
+def parse_contact(s):
+    """Telefon raqam (+998...) yoki Telegram username (@user) ni qaytaradi, bo'lmasa None."""
+    s = (s or "").strip()
+    ph = norm_phone(s)
+    if ph:
+        return ph
+    m = re.fullmatch(r"(?:https?://)?(?:t\.me/|telegram\.me/)?@?([A-Za-z][A-Za-z0-9_]{4,31})/?", s)
+    return "@" + m.group(1) if m else None
+
+
 def parse_amount(s):
     d = re.sub(r"\D", "", s or "")
     if not d:

@@ -68,7 +68,10 @@ def order_details(o, with_phone=True):
         lines.append(f"📍 {esc(o['route'])}")
     lines.append(f"📝 {esc(o['text'])}")
     if with_phone and o["phone"]:
-        lines.append(f"📞 Telefon: {esc(o['phone'])}")
+        if str(o["phone"]).startswith("@"):
+            lines.append(f"🔗 Username: {esc(o['phone'])}")
+        else:
+            lines.append(f"📞 Telefon: {esc(o['phone'])}")
     if with_phone and o["source"] == "filter" and o["creator_id"]:
         un = f" (@{esc(o['sender_username'])})" if o["sender_username"] else ""
         lines.append(f"👤 {ulink(o['creator_id'], o['sender_name'] or 'Profil')}{un}")

@@ -1,4 +1,5 @@
 """Filtr guruhi: kalit so'z bor xabarni darhol o'chiradi va zakaz sifatida asosiy guruhga tashlaydi."""
+import asyncio
 import logging
 import re
 
@@ -9,7 +10,8 @@ import config
 import db
 import services
 from keywords import match_keyword
-from utils import norm_phone
+from i18n import t
+from utils import norm_phone, esc, ulink
 
 log = logging.getLogger("filter")
 router = Router()
@@ -72,6 +74,29 @@ async def process(m: Message, bot: Bot):
     except Exception as e:
         log.error("Filtr zakazini guruhga yuborib bo'lmadi: %s", e)
         await db.ex("UPDATE orders SET status='cancelled' WHERE id=?", (oid,))
+        return
+    await notify_sender(bot, m)
+
+
+async def notify_sender(bot: Bot, m: Message):
+    """Xabar egasiga zakaz yuborilgani haqida chiroyli xabar. Lichkaga yozib bo'lmasa — guruhda eslatadi."""
+    uid = m.from_user.id
+    lang = await db.get_lang(uid)
+    text = t("f_sent", lang, name=esc(m.from_user.full_name))
+    try:
+        await bot.send_message(uid, "🚖")
+        await bot.send_message(uid, text)
+        await bot.send_message(uid, "✅")
+        return
+    except Exception:
+        pass
+    # foydalanuvchi botni hali ishga tushirmagan — guruhning o'zida qisqa xabar (keyin o'chiriladi)
+    try:
+        msg = await bot.send_message(config.FILTER_GROUP_ID, t("f_sent", lang, name=ulink(uid, m.from_user.full_name)))
+        await asyncio.sleep(60)
+        await msg.delete()
+    except Exception as e:
+        log.warning("Xabar egasiga xabar yuborib bo'lmadi: %s", e)
 
 
 @router.message()
