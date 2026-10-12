@@ -218,6 +218,7 @@ T = {
     "a_order_detail": "📦 <b>Zakaz #{id}</b>\n\n📍 Yo'nalish: {route}\n📝 Matn: {text}\n📞 Telefon: {phone}\n💵 Narxi: <b>{price}</b> so'm\n👤 Kim bergan: {source}\n📌 Holat: {state}\n🚗 Qabul qilgan: {driver}\n🚦 Navbat:\n{queue}\n📅 Sana: {created}",
     "src_admin": "Admin",
     "src_passenger": "Yo'lovchi",
+    "src_filter": "Filtr guruhi",
     "ost_open": "⏳ Kutilmoqda",
     "ost_accepted": "✅ Qabul qilingan",
     "ost_cancelled": "❌ Bekor qilingan",

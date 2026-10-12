@@ -432,7 +432,7 @@ async def order_view(cb: CallbackQuery):
         drv = ulink(o["accepted_by"], d["name"] if d else o["accepted_by"])
     text = t("a_order_detail", lang, id=o["id"], route=esc(o["route"] or "—"), text=esc(o["text"]),
              phone=esc(o["phone"]), price=fmt(o["price"]),
-             source=t("src_admin" if o["source"] == "admin" else "src_passenger", lang),
+             source=t({"admin": "src_admin", "filter": "src_filter"}.get(o["source"], "src_passenger"), lang),
              state=t("ost_" + o["status"], lang), driver=drv,
              queue=await services.queue_text(oid), created=o["created"])
     rows = []

@@ -9,7 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 import config
 import db
-from handlers import common, admin, driver, passenger, queue
+from handlers import common, admin, driver, passenger, queue, filter_group
 
 
 async def main():
@@ -19,6 +19,7 @@ async def main():
     await db.init()
     bot = Bot(config.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher(storage=MemoryStorage())
+    dp.include_router(filter_group.router)
     dp.include_router(common.router)
     dp.include_router(admin.router)
     dp.include_router(driver.router)

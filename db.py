@@ -42,6 +42,12 @@ async def init():
     await _db.execute("PRAGMA journal_mode=WAL")
     await _db.executescript(SCHEMA)
     await _db.commit()
+    for col in ("sender_name", "sender_username"):
+        try:
+            await _db.execute(f"ALTER TABLE orders ADD COLUMN {col} TEXT")
+            await _db.commit()
+        except Exception:
+            pass
 
 
 async def q1(sql, args=()):
