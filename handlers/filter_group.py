@@ -1,5 +1,4 @@
 """Filtr guruhi: kalit so'z bor xabarni darhol o'chiradi va zakaz sifatida asosiy guruhga tashlaydi."""
-import asyncio
 import logging
 import re
 
@@ -79,24 +78,14 @@ async def process(m: Message, bot: Bot):
 
 
 async def notify_sender(bot: Bot, m: Message):
-    """Xabar egasiga zakaz yuborilgani haqida chiroyli xabar. Lichkaga yozib bo'lmasa — guruhda eslatadi."""
+    """O'chirilgan xabar o'rniga filtr guruhining o'ziga xabar egasini belgilab javob yozadi."""
     uid = m.from_user.id
     lang = await db.get_lang(uid)
-    text = t("f_sent", lang, name=esc(m.from_user.full_name))
     try:
-        await bot.send_message(uid, "🚖")
-        await bot.send_message(uid, text)
-        await bot.send_message(uid, "✅")
-        return
-    except Exception:
-        pass
-    # foydalanuvchi botni hali ishga tushirmagan — guruhning o'zida qisqa xabar (keyin o'chiriladi)
-    try:
-        msg = await bot.send_message(config.FILTER_GROUP_ID, t("f_sent", lang, name=ulink(uid, m.from_user.full_name)))
-        await asyncio.sleep(60)
-        await msg.delete()
+        await bot.send_message(config.FILTER_GROUP_ID,
+                               t("f_sent", lang, name=ulink(uid, m.from_user.full_name)))
     except Exception as e:
-        log.warning("Xabar egasiga xabar yuborib bo'lmadi: %s", e)
+        log.warning("Filtr guruhiga javob yozib bo'lmadi: %s", e)
 
 
 @router.message()
